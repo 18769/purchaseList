@@ -54,6 +54,11 @@
 
         <button type="submit" id="submitBtn">送出訂單</button>
         </form>
+
+        <div class="form-group">
+            <label for="note">備註</label>
+            <input type="email" id="mail" placeholder="有什麼其他想說的？" required>
+        </div>
     </div>
 
     <script>
@@ -81,7 +86,7 @@
             // 基本檢查
             const name = document.getElementById('name').value.trim();
             const studentId = document.getElementById('studentId').value.trim();
-            if (!name || !studentId) {
+            if (!name || !studentId||!mail) {
                 alert("請填寫必填欄位");
                 return;
             }
@@ -95,7 +100,8 @@
                 mail: document.getElementById('mail').value,
                 size: document.getElementById('size').value,
                 amount: amountInput.value,
-                totalPrice: parseInt(amountInput.value) * UNIT_PRICE // 同步把總價送到後台
+                totalPrice: parseInt(amountInput.value) * UNIT_PRICE, // 同步把總價送到後台
+                note: document.getElementById('note').value
             };
 
             fetch(scriptURL, {
