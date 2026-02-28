@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系服預購系統</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+    <h2>👕 系服購買登記</h2>
+
+    <div class="shirt-preview">
+        <img src="preview.png" alt="系服預覽圖" id="previewImg">
+        <p class="price-tag">單價：$250</p>
+    </div>
+
+    <form id="orderForm">
+        <div class="form-group">
+            <label for="name">姓名</label>
+            <input type="text" id="name" placeholder="請輸入姓名" required>
+        </div>
+
+        <div class="form-group">
+            <label for="studentId">學號</label>
+            <input type="text" id="studentId" placeholder="例如：B110... " required>
+        </div>
+
+        <div class="form-group">
+            <label for="mail">電子郵件(聯絡用)</label>
+            <input type="email" id="mail" placeholder="例如：7777@NCUEmail " required>
+        </div>
+
+        <div class="form-group">
+            <label for="size">尺寸</label>
+            <select id="size">
+                <option value="S">S</option>
+                <option value="M" selected>M</option>
+                <option value="L">L</option>
+                <option value="2L">2L</option>
+                <option value="XL">XL</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="amount">購買件數</label>
+            <input type="number" id="amount" value="1" min="1">
+        </div>
+
+        <div class="total-price">
+            總計金額：<span id="totalDisplay">$250</span>
+        </div>
+
+        <button type="submit" id="submitBtn">送出訂單</button>
+        </form>
+    </div>
+
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbw4Grm_l83E730br2TGBsD0pWbeWzTWlHVM6hFkMSr-LmBqJSFtYzTlq4XBzA86LNAkKQ/exec';
+        const UNIT_PRICE = 250; // 這裡設定單價
+
+        const form = document.getElementById('orderForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const amountInput = document.getElementById('amount');
+        const totalDisplay = document.getElementById('totalDisplay');
+
+        // --- 自動計算金額邏輯 ---
+        function updateTotal() {
+            const amount = parseInt(amountInput.value) || 0;
+            const total = amount * UNIT_PRICE;
+            totalDisplay.innerText = `$${total}`;
+        }
+
+        // 監聽輸入框變化 (打字或點擊上下箭頭)
+        amountInput.addEventListener('input', updateTotal);
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            
+            // 基本檢查
+            const name = document.getElementById('name').value.trim();
+            const studentId = document.getElementById('studentId').value.trim();
+            if (!name || !studentId) {
+                alert("請填寫必填欄位");
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerText = '處理中...';
+
+            const data = {
+                name: name,
+                studentId: studentId,
+                mail: document.getElementById('mail').value,
+                size: document.getElementById('size').value,
+                amount: amountInput.value,
+                totalPrice: parseInt(amountInput.value) * UNIT_PRICE // 同步把總價送到後台
+            };
+
+            fetch(scriptURL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify(data),
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(() => {
+                alert("🎉 登記成功！");
+                submitBtn.disabled = false;
+                submitBtn.innerText = '送出訂單';
+                form.reset();
+                updateTotal(); // 重置後恢復顯示 $250
+            })
+            .catch(error => {
+                console.error('Error!', error.message);
+                alert("發生錯誤，請稍後再試");
+                submitBtn.disabled = false;
+                submitBtn.innerText = '送出訂單';
+            });
+        });
+    </script>
+</body>
+</html>
