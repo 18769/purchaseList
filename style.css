@@ -136,10 +136,10 @@ button:disabled {
 .checkbox-group {
     display: flex;
     align-items: center;
-    flex: 1; /* 讓勾選區塊佔據剩餘空間 */
+    flex: 1; 
+    min-width: 140px; /* 加入這行，防止勾選框被擠扁 */
     font-size: 0.85rem;
-    color: #444;
-    white-space: nowrap; /* 防止文字換行 */
+    white-space: nowrap; 
 }
 
 .checkbox-group input {
