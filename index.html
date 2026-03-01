@@ -13,7 +13,7 @@
 
     <div class="shirt-preview">
         <img src="preview.png" alt="系服預覽圖" id="previewImg">
-        <p class="price-tag">單價：$415</p>
+        <p class="price-tag">單價：$420</p>
     </div>
 
     <form id="orderForm">
@@ -37,6 +37,7 @@
                 </div>
             </div>
         </div>
+        
 
         <div class="form-group">
             <label for="size">尺寸(2L+20$,3L以上+35$)</label>
@@ -56,7 +57,7 @@
         </div>
 
         <div class="total-price">
-            總計金額：<span id="totalDisplay">$415</span>
+            總計金額：<span id="totalDisplay">$420</span>
         </div>
 
         <div class="form-group">
@@ -82,7 +83,7 @@
 
     <script>
         const scriptURL = 'https://script.google.com/macros/s/AKfycbw4Grm_l83E730br2TGBsD0pWbeWzTWlHVM6hFkMSr-LmBqJSFtYzTlq4XBzA86LNAkKQ/exec';
-        const UNIT_PRICE = 415; 
+        const UNIT_PRICE = 420; 
 
         const receiptModal = document.getElementById('receiptModal');
         const receiptDetails = document.getElementById('receiptDetails');
@@ -111,7 +112,7 @@
             // 2. 計算總額
             let total = amount * currentUnitPrice;
 
-            // 3. 處理會費折抵 (折抵一件基礎單價 $415)
+            // 3. 處理會費折抵 (折抵一件基礎單價 $420)
             if (isMember && amount > 0) {
                 total -= currentUnitPrice; 
             }
