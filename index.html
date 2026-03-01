@@ -13,7 +13,7 @@
 
     <div class="shirt-preview">
         <img src="preview.png" alt="系服預覽圖" id="previewImg">
-        <p class="price-tag">單價：$250</p>
+        <p class="price-tag">單價：$415</p>
     </div>
 
     <form id="orderForm">
@@ -29,17 +29,24 @@
 
         <div class="form-group">
             <label for="mail">電子郵件(聯絡用)</label>
-            <input type="email" id="mail" placeholder="例如：7777@NCUEmail " required>
+            <div class="input-row">
+                <input type="email" id="mail" placeholder="例如：7777@NCUEmail" required>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="isMember">
+                    <label for="isMember" class="checkbox-label">已繳會費(抵1件)</label>
+                </div>
+            </div>
         </div>
 
         <div class="form-group">
-            <label for="size">尺寸</label>
+            <label for="size">尺寸(2L+20$,3L以上+35$)</label>
             <select id="size">
                 <option value="S">S</option>
                 <option value="M" selected>M</option>
                 <option value="L">L</option>
                 <option value="2L">2L</option>
-                <option value="XL">XL</option>
+                <option value="3L">3L</option>
+                <option value="3L">4L</option>
             </select>
         </div>
 
@@ -49,44 +56,73 @@
         </div>
 
         <div class="total-price">
-            總計金額：<span id="totalDisplay">$250</span>
+            總計金額：<span id="totalDisplay">$415</span>
         </div>
-
-        <button type="submit" id="submitBtn">送出訂單</button>
-        </form>
 
         <div class="form-group">
             <label for="note">備註</label>
             <input type="text" id="note" placeholder="有什麼其他想說的？" required>
         </div>
+
+        <button type="submit" id="submitBtn">送出訂單</button>
+        </form>
+
     </div>
 
     <script>
         const scriptURL = 'https://script.google.com/macros/s/AKfycbw4Grm_l83E730br2TGBsD0pWbeWzTWlHVM6hFkMSr-LmBqJSFtYzTlq4XBzA86LNAkKQ/exec';
-        const UNIT_PRICE = 250; // 這裡設定單價
+        const UNIT_PRICE = 415; 
 
         const form = document.getElementById('orderForm');
         const submitBtn = document.getElementById('submitBtn');
         const amountInput = document.getElementById('amount');
+        const sizeInput = document.getElementById('size');
+        const isMemberCheck = document.getElementById('isMember');
         const totalDisplay = document.getElementById('totalDisplay');
 
-        // --- 自動計算金額邏輯 ---
         function updateTotal() {
             const amount = parseInt(amountInput.value) || 0;
-            const total = amount * UNIT_PRICE;
+            const sizeValue = sizeInput.value;
+            const isMember = isMemberCheck.checked;
+            
+            let currentUnitPrice = UNIT_PRICE;
+
+            // 1. 處理尺寸加價
+            if (sizeValue === "2L") {
+                currentUnitPrice += 20;
+            } else if (sizeValue === "3L" || sizeValue === "4L") {
+                currentUnitPrice += 35;
+            }
+            
+            // 2. 計算總額
+            let total = amount * currentUnitPrice;
+
+            // 3. 處理會費折抵 (折抵一件基礎單價 $415)
+            if (isMember && amount > 0) {
+                total -= currentUnitPrice; 
+            }
+
+            // 4. 確保總額不為負數 (預防萬一)
+            if (total < 0) total = 0;
+
             totalDisplay.innerText = `$${total}`;
+            return total;
         }
 
-        // 監聽輸入框變化 (打字或點擊上下箭頭)
+        // 監聽所有會影響金額的欄位
         amountInput.addEventListener('input', updateTotal);
+        sizeInput.addEventListener('change', updateTotal);
+        isMemberCheck.addEventListener('change', updateTotal);
 
         form.addEventListener('submit', e => {
             e.preventDefault();
             
-            // 基本檢查
             const name = document.getElementById('name').value.trim();
             const studentId = document.getElementById('studentId').value.trim();
-            if (!name || !studentId||!mail) {
+            const mail = document.getElementById('mail').value.trim();
+            const finalTotal = updateTotal();
+
+            if (!name || !studentId || !mail) {
                 alert("請填寫必填欄位");
                 return;
             }
@@ -97,10 +133,11 @@
             const data = {
                 name: name,
                 studentId: studentId,
-                mail: document.getElementById('mail').value,
-                size: document.getElementById('size').value,
+                mail: mail,
+                isMember: isMemberCheck.checked ? "是" : "否", // 傳給後台
+                size: sizeInput.value,
                 amount: amountInput.value,
-                totalPrice: parseInt(amountInput.value) * UNIT_PRICE, // 同步把總價送到後台
+                totalPrice: finalTotal,
                 note: document.getElementById('note').value
             };
 
@@ -111,11 +148,11 @@
                 headers: { 'Content-Type': 'application/json' }
             })
             .then(() => {
-                alert("🎉 登記成功！");
+                alert(`🎉 登記成功！\n最終金額為：$${finalTotal}`);
                 submitBtn.disabled = false;
                 submitBtn.innerText = '送出訂單';
                 form.reset();
-                updateTotal(); // 重置後恢復顯示 $250
+                updateTotal(); 
             })
             .catch(error => {
                 console.error('Error!', error.message);
