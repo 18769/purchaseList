@@ -69,10 +69,24 @@
 
     </div>
 
+    <div id="receiptModal" class="modal">
+        <div class="modal-content">
+            <h3>🧾 購買收據 (預購登記)</h3>
+            <hr>
+            <div id="receiptDetails">
+                </div>
+            <button onclick="closeReceipt()" class="close-btn">關閉並返回</button>
+            <p style="font-size: 0.8rem; color: #888; margin-top: 10px;">請截圖此畫面作為購買證明</p>
+        </div>
+    </div>
+
     <script>
         const scriptURL = 'https://script.google.com/macros/s/AKfycbw4Grm_l83E730br2TGBsD0pWbeWzTWlHVM6hFkMSr-LmBqJSFtYzTlq4XBzA86LNAkKQ/exec';
         const UNIT_PRICE = 415; 
 
+        const receiptModal = document.getElementById('receiptModal');
+        const receiptDetails = document.getElementById('receiptDetails');
+        
         const form = document.getElementById('orderForm');
         const submitBtn = document.getElementById('submitBtn');
         const amountInput = document.getElementById('amount');
@@ -114,6 +128,10 @@
         sizeInput.addEventListener('change', updateTotal);
         isMemberCheck.addEventListener('change', updateTotal);
 
+        function closeReceipt() {
+            receiptModal.style.display = 'none';
+        }
+
         form.addEventListener('submit', e => {
             e.preventDefault();
             
@@ -148,11 +166,35 @@
                 headers: { 'Content-Type': 'application/json' }
             })
             .then(() => {
-                alert(`🎉 登記成功！\n最終金額為：$${finalTotal}`);
+                // 取得當前日期
+                const now = new Date();
+                const dateString = `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()} ${now.getHours()}:${now.getMinutes()}`;
+                
+                // 準備收據內容
+                const isMemberText = isMemberCheck.checked ? "✅ 已繳會費 (抵1件)" : "❌ 未繳會費";
+                const finalTotal = updateTotal(); // 再次確認金額
+
+                receiptDetails.innerHTML = `
+                    <div class="receipt-item"><span class="receipt-label">登記日期：</span><span class="receipt-value">${dateString}</span></div>
+                    <div class="receipt-item"><span class="receipt-label">姓名：</span><span class="receipt-value">${document.getElementById('name').value}</span></div>
+                    <div class="receipt-item"><span class="receipt-label">學號：</span><span class="receipt-value">${document.getElementById('studentId').value}</span></div>
+                    <div class="receipt-item"><span class="receipt-label">電郵：</span><span class="receipt-value">${document.getElementById('mail').value}</span></div>
+                    <div class="receipt-item"><span class="receipt-label">尺寸：</span><span class="receipt-value">${sizeInput.value}</span></div>
+                    <div class="receipt-item"><span class="receipt-label">會費狀態：</span><span class="receipt-value">${isMemberText}</span></div>
+                    <hr>
+                    <div class="receipt-item" style="font-size: 1.2rem; font-weight: bold; color: #d9534f;">
+                        <span>應付總額：</span><span>$${finalTotal}</span>
+                    </div>
+                `;
+
+                // 顯示收據彈窗
+                receiptModal.style.display = 'flex';
+
+                // 重置表單
                 submitBtn.disabled = false;
                 submitBtn.innerText = '送出訂單';
                 form.reset();
-                updateTotal(); 
+                updateTotal();
             })
             .catch(error => {
                 console.error('Error!', error.message);
