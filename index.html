@@ -61,7 +61,7 @@
 
         <div class="form-group">
             <label for="note">備註</label>
-            <input type="text" id="note" placeholder="有什麼其他想說的？" required>
+            <input type="text" id="note" placeholder="有什麼其他想說的？">
         </div>
 
         <button type="submit" id="submitBtn">送出訂單</button>
@@ -178,7 +178,8 @@
                     <div class="receipt-item"><span class="receipt-label">登記日期：</span><span class="receipt-value">${dateString}</span></div>
                     <div class="receipt-item"><span class="receipt-label">姓名：</span><span class="receipt-value">${document.getElementById('name').value}</span></div>
                     <div class="receipt-item"><span class="receipt-label">學號：</span><span class="receipt-value">${document.getElementById('studentId').value}</span></div>
-                    <div class="receipt-item"><span class="receipt-label">電郵：</span><span class="receipt-value">${document.getElementById('mail').value}</span></div>
+                    <div class="receipt-item"><span class="receipt-label">郵件：</span><span class="receipt-value">${document.getElementById('mail').value}</span></div>
+                    <div class="receipt-item"><span class="receipt-label">數量：</span><span class="receipt-value">${document.getElementById('amount').value}</span></div>
                     <div class="receipt-item"><span class="receipt-label">尺寸：</span><span class="receipt-value">${sizeInput.value}</span></div>
                     <div class="receipt-item"><span class="receipt-label">會費狀態：</span><span class="receipt-value">${isMemberText}</span></div>
                     <hr>
