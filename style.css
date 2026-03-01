@@ -126,30 +126,37 @@ button:disabled {
 .input-row {
     display: flex;
     align-items: center;
-    gap: 10px; /* 欄位與勾選框的間距 */
+    width: 100%; /* 確保撐滿容器 */
+    gap: 8px;    /* 欄位間的間距 */
 }
 
 .input-row input[type="email"] {
-    flex: 2; /* 讓電郵欄位佔據較多空間 */
+    flex-grow: 1;    /* 讓電郵欄位自動佔掉所有剩餘空間 */
+    min-width: 0;    /* 這是 Flexbox 的小技巧，防止 input 撐破容器 */
+    padding: 10px;
 }
 
 .checkbox-group {
     display: flex;
     align-items: center;
-    flex: 1; 
-    min-width: 140px; /* 加入這行，防止勾選框被擠扁 */
-    font-size: 0.85rem;
-    white-space: nowrap; 
+    flex-shrink: 0;  /* 重要：強制不准被擠壓！ */
+    width: 135px;    /* 給它一個剛好放得下文字的固定寬度 */
+    font-size: 0.8rem;
+    color: #555;
+    background: #f0f0f0; /* 選加：加個淡淡底色方便看範圍，不喜歡可刪 */
+    padding: 5px;
+    border-radius: 4px;
 }
 
 .checkbox-group input {
-    margin-right: 5px;
-    width: 18px;
-    height: 18px;
+    margin-right: 4px;
+    width: 16px;
+    height: 16px;
     cursor: pointer;
+    flex-shrink: 0; /* 防止勾選圓圈本身變扁 */
 }
 
 .checkbox-label {
+    white-space: nowrap; /* 絕對不准換行 */
     cursor: pointer;
-    margin-bottom: 0 !important; /* 覆蓋原本 label 的 margin */
 }
